@@ -22,7 +22,7 @@ jobs:
           cache: pnpm
 
       - name: Install
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-pnpmfile
 
       - name: Typecheck generated protocol
         run: pnpm typecheck

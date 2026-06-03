@@ -40,7 +40,7 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Install
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-pnpmfile
 
       - name: Typecheck generated protocol
         run: pnpm typecheck
