@@ -1,0 +1,61 @@
+name: Publish
+
+# Tokenless publish to npm via OIDC trusted publishing (no NPM_TOKEN secret).
+# Requires a one-time bootstrap publish + trusted-publisher config on npmjs.com —
+# see PUBLISHING.md. Steady state: cut a GitHub Release `v<version>` (or run this
+# workflow manually) and GHA publishes the package.json version with provenance.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      dist-tag:
+        description: "npm dist-tag to publish under"
+        default: "latest"
+        required: true
+
+permissions:
+  contents: read
+  id-token: write # REQUIRED for OIDC trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: "https://registry.npmjs.org"
+          cache: pnpm
+
+      # Trusted publishing requires npm >= 11.5.1.
+      - name: Ensure npm supports trusted publishing
+        run: npm install -g npm@latest
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck generated protocol
+        run: pnpm typecheck
+
+      # Guard against tag/version drift when triggered by a GitHub Release.
+      - name: Verify release tag matches package version
+        if: github.event_name == 'release'
+        run: |
+          PKG="$(node -p "require('./package.json').version")"
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$PKG" != "$TAG" ]; then
+            echo "::error::Release tag '$TAG' does not match package.json version '$PKG'"
+            exit 1
+          fi
+          echo "Publishing version $PKG"
+
+      - name: Publish to npm (OIDC + provenance)
+        run: npm publish --provenance --access public --tag "${{ github.event.inputs.dist-tag || 'latest' }}"
