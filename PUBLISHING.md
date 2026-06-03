@@ -33,6 +33,22 @@ subsequent GHA publish will carry provenance.)
 **Option B — one temporary token in GHA:** add a short-lived `NPM_TOKEN` repo
 secret, run a one-off publish, then delete the secret and rely on OIDC.
 
+## Create the protected GitHub environment (once)
+
+The publish job runs in a GitHub Actions **environment** named `npm-publish`.
+This both lets npm pin the trusted publisher to that environment (tighter OIDC
+subject) and gates every publish behind protection rules. On a **public** repo
+these rules are free.
+
+Repo → **Settings → Environments → New environment** → name it **`npm-publish`**,
+then add protection rules:
+
+- **Required reviewers** — yourself / the release approvers. Each publish then
+  pauses for a manual approval click.
+- **Deployment branches and tags** → *Selected* → add a tag rule **`v*`** (and
+  `main` if you ever dispatch manually). This stops a publish from any other ref.
+- *(optional)* a wait timer.
+
 ## Configure the trusted publisher (once, on npmjs.com)
 
 After the package exists:
@@ -43,7 +59,9 @@ After the package exists:
    - **Organization / user:** `pwrdrvr`
    - **Repository:** `codex-app-server-protocol`
    - **Workflow filename:** `publish.yml`
-   - **Environment:** *(leave blank unless you add one to the workflow)*
+   - **Environment:** **`npm-publish`** — must **exactly match** the
+     `environment.name` in `publish.yml`, or the OIDC subject won't validate and
+     the publish is rejected.
 3. Save. The repo's `package.json` `repository` field already points at this
    repo, which npm cross-checks.
 
@@ -57,9 +75,10 @@ After the package exists:
    ```
 2. Push, then cut a **GitHub Release** tagged `v<version>` (e.g. `v0.133.0`).
    - Or trigger **Actions → Publish → Run workflow** and pick a `dist-tag`.
-3. `.github/workflows/publish.yml` typechecks, verifies the tag matches
-   `package.json`, and runs `npm publish --provenance` using the OIDC token. No
-   secret involved.
+3. `.github/workflows/publish.yml` runs in the `npm-publish` environment, so it
+   **pauses for the required-reviewer approval**, then typechecks, verifies the
+   tag matches `package.json`, and runs `npm publish --provenance` using the
+   OIDC token. No secret involved.
 
 ## Notes
 

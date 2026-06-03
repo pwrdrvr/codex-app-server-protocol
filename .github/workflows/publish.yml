@@ -22,6 +22,12 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # The npm trusted publisher is pinned to this environment name — they MUST
+    # match. Add protection rules to it (required reviewers, restrict to `v*`
+    # tags) in repo Settings → Environments → npm-publish. See PUBLISHING.md.
+    environment:
+      name: npm-publish
+      url: https://www.npmjs.com/package/@pwrdrvr/codex-app-server-protocol
     steps:
       - uses: actions/checkout@v4
 
