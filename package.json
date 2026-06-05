@@ -1,11 +1,11 @@
 {
   "name": "@pwrdrvr/codex-app-server-protocol",
-  "version": "0.133.0",
+  "version": "0.135.0",
   "description": "TypeScript types for the Codex App Server JSON-RPC protocol, generated from `codex app-server generate-ts --experimental`. The package version mirrors the Codex CLI version used to generate it; the experimental protocol surface is included.",
   "author": "PwrDrvr LLC",
   "license": "MIT",
   "type": "module",
-  "codexCliVersion": "0.133.0",
+  "codexCliVersion": "0.135.0",
   "codexExperimental": true,
   "keywords": [
     "codex",
@@ -38,6 +38,7 @@
   "sideEffects": false,
   "scripts": {
     "generate": "${PWRDRVR_CODEX_BIN:-/Applications/Codex.app/Contents/Resources/codex} app-server generate-ts --out ./src --experimental",
+    "regenerate": "bash scripts/regenerate.sh",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {

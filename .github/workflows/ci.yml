@@ -10,13 +10,13 @@ jobs:
   typecheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 10.33.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -26,3 +26,9 @@ jobs:
 
       - name: Typecheck generated protocol
         run: pnpm typecheck
+
+      # Validate the published package shape (exports map, files, types
+      # resolution) so an export-map/packaging regression fails the PR rather
+      # than reaching consumers. Pinned for reproducible CI; bump deliberately.
+      - name: Validate package metadata (publint)
+        run: pnpm dlx publint@0.3.21

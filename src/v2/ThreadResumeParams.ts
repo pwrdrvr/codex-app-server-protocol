@@ -68,4 +68,4 @@ excludeTurns?: boolean,
  * continue sending the field while rollout persistence always uses the
  * limited history policy.
  */
-persistExtendedHistory: boolean, };
+persistExtendedHistory?: boolean, };

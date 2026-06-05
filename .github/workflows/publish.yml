@@ -29,13 +29,13 @@ jobs:
       name: npm-publish
       url: https://www.npmjs.com/package/@pwrdrvr/codex-app-server-protocol
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           version: 10.33.0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
           registry-url: "https://registry.npmjs.org"
@@ -50,6 +50,11 @@ jobs:
 
       - name: Typecheck generated protocol
         run: pnpm typecheck
+
+      # Validate the published package shape (exports map, files, types
+      # resolution) right before publishing. Pinned for reproducible CI.
+      - name: Validate package metadata (publint)
+        run: pnpm dlx publint@0.3.21
 
       # Guard against tag/version drift when triggered by a GitHub Release.
       - name: Verify release tag matches package version
