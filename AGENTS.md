@@ -92,9 +92,16 @@ Refresh the README's **"Current generated source"** line (version **and** the
 ### 4. Verify
 
 ```bash
-pnpm install        # if node_modules is missing
-pnpm typecheck      # tsc --noEmit; must pass
+pnpm install              # if node_modules is missing
+pnpm typecheck            # tsc --noEmit over the generated sources; must pass
+pnpm dlx publint@0.3.21   # validate the published package shape; must pass
 ```
+
+`pnpm typecheck` is the core check — it proves the generated, type-only sources
+compile for consumers. `publint` validates the published package shape (the
+`exports` map, `files`, types resolution) so a packaging regression fails here
+rather than reaching consumers. Both run in CI (and `publish.yml` before the npm
+publish), so green locally ≈ green CI.
 
 > Note: a globally-configured pnpmfile may inject a `pnpmfileChecksum:` line into
 > `pnpm-lock.yaml` on install. The committed lockfile intentionally omits it (CI
@@ -119,3 +126,4 @@ changes), then commit. Publishing is gated separately — see
 | `pnpm regenerate` | Clean-room: delete `src/`, regenerate, stage, summarize. **Use this.** |
 | `pnpm generate` | Raw generator only (no delete, no stage). Won't surface removals. |
 | `pnpm typecheck` | `tsc --noEmit` over the generated sources. |
+| `pnpm dlx publint@0.3.21` | Validate the published package shape (exports, files, types). |
