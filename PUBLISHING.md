@@ -82,8 +82,9 @@ After the package exists:
 
 ## Notes
 
-- The publish workflow upgrades to the latest npm (trusted publishing needs
-  `npm >= 11.5.1`) and sets `id-token: write`.
+- The publish workflow upgrades to npm 11 (trusted publishing needs
+  `npm >= 11.5.1`) and sets `id-token: write`. Keep this pinned to the npm 11
+  major unless `.nvmrc` is also moved forward enough for the next npm major.
 - `publishConfig.access` is `public`; provenance is added via the `--provenance`
   flag in the workflow (not in `package.json`, so the local bootstrap publish in
   Option A doesn't fail for lack of an OIDC context).
