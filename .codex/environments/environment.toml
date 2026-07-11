@@ -1,0 +1,9 @@
+version = 1
+name = "codex-app-server-protocol"
+
+[setup]
+script = '''
+nvm install
+corepack enable
+pnpm install
+'''
