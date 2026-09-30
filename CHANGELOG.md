@@ -4,6 +4,35 @@ All notable package changes are documented here. The package version mirrors the
 `codex-cli` version used to generate `src/`, and generated entries use
 `codex app-server generate-ts --experimental`.
 
+## 0.159.2 - 2026-09-29
+
+Generated from exact released `codex-cli 0.159.2` with the experimental surface.
+875 generated TypeScript files, up from 827 in 0.153.4. The client request union
+adds 13 methods and removes `thread/rollback`; the server notification union
+adds two methods.
+
+### Added
+
+- `ThreadItemEntry.startedAtMs` and `completedAtMs` expose nullable historical
+  item lifecycle times in Unix milliseconds through `thread/items/list`.
+  `Turn.items` and ordinary timeline items still have no per-item timing fields.
+- Thread attachment add, list, and remove RPCs and an update notification;
+  account gateway OAuth, memory status, user verification, and rollout
+  compression RPCs.
+- Item-anchored `thread/items/list` cursors, thread environments and originator,
+  saved Daybreak choice, disabled plugin IDs, and model access-program metadata.
+
+### Changed / consumer migration
+
+- `thread/rollback` request and response types are removed. Consumers using
+  that method must migrate to the current thread revert surface.
+- `ThreadItemEntry` now requires the two nullable timing fields. `Thread` now
+  requires `environments`, `originator`, and `daybreakEnabled`; start, resume,
+  and fork responses require `disabledPluginIds`. Update typed fixtures.
+- Model IDs remain strings in thread and turn requests. No generated type names
+  GPT-6.1-Sol or requires a model-specific binding change; discover available
+  models from the server at runtime.
+
 ## 0.153.4 - 2026-09-06
 
 Generated from exact released `codex-cli 0.153.4` with the experimental surface.
